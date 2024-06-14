@@ -1,0 +1,80 @@
+pazmiño_estudiantes = []
+
+def agregar_estudiantes():
+    pazmino_n = input("Ingrese los nombres y apellidos del estudiante: ")
+    pazmino_id = input("Ingrese el numero de identificacion del estudiante: ")
+    pazmino_e = input("Ingrese la edad del estudiante: ")
+    pazmino_g = input("Ingrese el grado del estudiante: ")
+    pazmino_c = input("Ingrese los cursos inscritos del estudiante: ")
+
+    for estudiante in pazmiño_estudiantes:
+        if estudiante["identificacion"] == pazmino_id:
+            print("El estudiante ya está registrado")
+            return
+        
+    daniel_estudiante = {
+        "nombre": pazmino_n,
+        "identificacion": pazmino_id,
+        "edad": pazmino_e,
+        "grado": pazmino_g,
+        "cursos": pazmino_c
+    }
+    pazmiño_estudiantes.append(daniel_estudiante)
+    print("El estudiante ha sido agregado con exito")
+
+def buscar_estudiantes():
+  
+    daniel_buscar_por = input("Ingrese el criterio de búsqueda del estudiante (nombre, ID, grado, curso): ")
+    daniel_buscar_valor = input("Ingrese el valor de búsqueda del estudiante: ") 
+    daniel_encontrado = False 
+
+    for estudiante in pazmiño_estudiantes:
+        if daniel_buscar_por == "nombre" and estudiante["nombre"] == daniel_buscar_valor:
+            print("¡Estudiante encontrado!:")
+            print("Nombre:", estudiante["nombre"])
+            print("ID:", estudiante["identificacion"])
+            print("Edad:", estudiante["edad"])
+            print("Grado:", estudiante["grado"])
+            print("Cursos:", estudiante["cursos"])
+            daniel_encontrado = True
+        elif daniel_buscar_por == "ID" and estudiante["identificacion"] == daniel_buscar_valor:
+            print("¡Estudiante encontrado!:")
+            print("Nombre:", estudiante["nombre"])
+            print("ID:", estudiante["identificacion"])
+            print("Edad:", estudiante["edad"])
+            print("Grado:", estudiante["grado"])
+            print("Cursos:", estudiante["cursos"])
+            daniel_encontrado = True
+        elif daniel_buscar_por == "grado" and estudiante["grado"] == daniel_buscar_valor:
+            print("¡Estudiante encontrado!:")
+            print("Nombre:", estudiante["nombre"])
+            print("ID:", estudiante["identificacion"])
+            print("Edad:", estudiante["edad"])
+            print("Grado:", estudiante["grado"])
+            print("Cursos:", estudiante["cursos"])
+            daniel_encontrado = True
+        elif daniel_buscar_por == "curso" and daniel_buscar_valor in estudiante["cursos"]:
+            print("¡Estudiante encontrado!:")
+            print("Nombre:", estudiante["nombre"])
+            print("ID:", estudiante["identificacion"])
+            print("Edad:", estudiante["edad"])
+            print("Grado:", estudiante["grado"])
+            print("Cursos:", estudiante["cursos"])
+            daniel_encontrado = True
+
+    if not daniel_encontrado:
+        print("El estudiante no está registrado en el sistema")  
+
+def ver_lista_estudiantes():
+    if not pazmiño_estudiantes:
+        print("No existe ningun estudiantes registrados en el sistema")
+    else:
+        print("Lista de estudiantes registrados:")
+        for i, estudiante in enumerate(pazmiño_estudiantes, 1):
+            print(f"Estudiante {i}:")
+            print("Nombre:", estudiante["nombre"])
+            print("ID:", estudiante["identificacion"])
+            print("Edad:", estudiante["edad"])
+            print("Grado:", estudiante["grado"])
+            print("Cursos:", estudiante["cursos"])
+            print("---------------------------------")
