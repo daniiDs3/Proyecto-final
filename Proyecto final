@@ -1,238 +1,420 @@
+import tkinter as tk
+from tkinter import messagebox
 import os
 
 # Lista global de estudiantes
 pazmiño_estudiantes = []
 
-# Función para agregar estudiantes
-def agregar_estudiantes():
-    pazmino_n = input("Ingrese los nombres y apellidos del estudiante: ")
-    pazmino_id = input("Ingrese el numero de identificacion del estudiante: ")
-    pazmino_e = input("Ingrese la edad del estudiante: ")
-    pazmino_g = input("Ingrese el grado del estudiante: ")
-    pazmino_c = input("Ingrese los cursos inscritos del estudiante separados por ';': ")
-    mateo1_beca = input("¿El estudiante es becado? (s/n): ").lower()
-
-    mateo2_faltas = 0
-    if mateo1_beca == 's':
-        mateo2_faltas = int(input("Ingrese el número de faltas del estudiante: "))
-        if mateo2_faltas > 3:
-            print("El estudiante ha perdido su beca debido a que el límite de faltas es 3.")
-            mateo1_beca = 'n'  # Cambiamos el estado de becado a 'no' si pierde la beca
-
-    # Verificar si el estudiante ya está registrado por su identificación
-    for estudiante in pazmiño_estudiantes:
-        if estudiante["identificacion"] == pazmino_id:
-            print("El estudiante ya está registrado.")
-            return
-    
-    # Crear diccionario del estudiante y agregarlo a la lista
-    daniel_estudiante = {
-        "nombre": pazmino_n,
-        "identificacion": pazmino_id,
-        "edad": pazmino_e,
-        "grado": pazmino_g,
-        "cursos": pazmino_c.split(';'),  # Convertir cursos a lista separados por ';'
-        "becado": mateo1_beca == 's',
-        "faltas": mateo2_faltas
-    }
-    pazmiño_estudiantes.append(daniel_estudiante)
-    print("El estudiante ha sido agregado con éxito.")
-
-    # Guardar los datos actualizados en el archivo
-    guardar_datos(pazmiño_estudiantes)
-
-# Función para imprimir los datos de un estudiante
-def imprimir_datos_estudiante(estudiante):
-    print("¡Estudiante encontrado!:")
-    print("Nombre:", estudiante["nombre"])
-    print("ID:", estudiante["identificacion"])
-    print("Edad:", estudiante["edad"])
-    print("Grado:", estudiante["grado"])
-    print("Cursos:", ', '.join(estudiante["cursos"]))
-    print("Becado:", "Sí" if estudiante["becado"] else "No")
-    if estudiante["becado"]:
-        print("Faltas:", estudiante["faltas"])
-    print("---------------------------------")
-
-# Función para ver la lista de estudiantes
-def ver_lista_estudiantes():
-    if not pazmiño_estudiantes:
-        print("No existen estudiantes registrados en el sistema.")
-    else:
-        print("Lista de estudiantes registrados:")
-        for i, estudiante in enumerate(pazmiño_estudiantes, 1):
-            print(f"Estudiante {i}:")
-            print("Nombre:", estudiante["nombre"])
-            print("ID:", estudiante["identificacion"])
-            print("Edad:", estudiante["edad"])
-            print("Grado:", estudiante["grado"])
-            print("Cursos:", ', '.join(estudiante["cursos"]))
-            print("---------------------------------")
-
-# Función para buscar estudiantes
-def buscar_estudiantes():
-    daniel_buscar_por = input("Ingrese el criterio de búsqueda del estudiante (nombre, ID, grado, curso): ")
-    daniel_buscar_valor = input("Ingrese el valor de búsqueda del estudiante: ") 
-    daniel_encontrado = False 
-
-    for estudiante in pazmiño_estudiantes:
-        if daniel_buscar_por.lower() == "nombre" and estudiante["nombre"].lower() == daniel_buscar_valor.lower():
-            imprimir_datos_estudiante(estudiante)
-            daniel_encontrado = True
-        elif daniel_buscar_por.lower() == "id" and estudiante["identificacion"] == daniel_buscar_valor:
-            imprimir_datos_estudiante(estudiante)
-            daniel_encontrado = True
-        elif daniel_buscar_por.lower() == "grado" and estudiante["grado"].lower() == daniel_buscar_valor.lower():
-            imprimir_datos_estudiante(estudiante)
-            daniel_encontrado = True
-        elif daniel_buscar_por.lower() == "curso" and daniel_buscar_valor.lower() in [curso.lower() for curso in estudiante["cursos"]]:
-            imprimir_datos_estudiante(estudiante)
-            daniel_encontrado = True
-
-    if not daniel_encontrado:
-        print("El estudiante no está registrado en el sistema.")  
+# Función para guardar los datos en un archivo de texto
+def guardar_datos_txt():
+    global pazmiño_estudiantes
+    with open('estudiantes.txt', 'w') as file:  # Abre el archivo en modo escritura
+        for pazmiño_estudiante in pazmiño_estudiantes:  # Itera sobre cada estudiante en la lista
+            pazmiño_cursos_str = ';'.join(pazmiño_estudiante['cursos'])  # Une los cursos con ';'
+            morales_becado_str = 's' if pazmiño_estudiante['becado'] else 'n'  # Convierte el estado de becado a 's' o 'n'
+            file.write(f"{pazmiño_estudiante['nombre']},{pazmiño_estudiante['identificacion']},{pazmiño_estudiante['edad']},{pazmiño_estudiante['grado']},{pazmiño_cursos_str},{morales_becado_str},{pazmiño_estudiante.get('faltas', 0)}\n")  # Escribe los datos del estudiante en una línea del archivo
+    messagebox.showinfo("Éxito", "Datos guardados correctamente en el archivo estudiantes.txt.")
 
 # Función para cargar datos desde un archivo
 def cargar_datos():
-    diego_estudiantes = []
-    if os.path.exists('estudiantes.txt'):
+    global pazmiño_estudiantes  # Usa la lista global
+    pazmiño_estudiantes = []  # Lista local para almacenar los estudiantes cargados desde el archivo
+    if os.path.exists('estudiantes.txt'):  # Verifica si el archivo existe
         with open('estudiantes.txt', 'r') as file:
-            for line in file:
-                nombre, identificacion, edad, grado, cursos = line.strip().split(',')
-                diego_estudiantes.append({
-                    'nombre': nombre,
-                    'identificacion': identificacion,
-                    'edad': edad,
-                    'grado': grado,
-                    'cursos': cursos.split(';')  # Separar los cursos por ';'
-                })
-    return diego_estudiantes
+            for line in file:  # Itera sobre cada línea del archivo
+                parts = line.strip().split(',')  # Divide la línea en partes usando la coma como separador
+                if len(parts) >= 6:
+                    nombre, identificacion, edad, grado, cursos, becado = parts[:6]  # Extrae datos básicos
+                    faltas = int(parts[6]) if len(parts) > 6 else 0  # Extrae las faltas si están disponibles
+                    pazmiño_estudiantes.append({  # Agrega un diccionario de estudiante a la lista
+                        'nombre': nombre,
+                        'identificacion': identificacion,
+                        'edad': int(edad),
+                        'grado': grado,
+                        'cursos': cursos.split(';'),
+                        'becado': becado.lower() == 's',
+                        'faltas': faltas
+                    })
+    return pazmiño_estudiantes  # Retorna la lista de estudiantes cargados desde el archivo
 
 # Función para guardar o actualizar datos en un archivo
 def guardar_datos(estudiantes):
-    with open('estudiantes.txt', 'w') as file:
-        for estudiante in estudiantes:
-            diego_cursos_str = ';'.join(estudiante['cursos'])  # Convertir cursos a string separados por ';'
-            file.write(f"{estudiante['nombre']},{estudiante['identificacion']},{estudiante['edad']},{estudiante['grado']},{diego_cursos_str}\n")
+    with open('estudiantes.txt', 'w') as file:  # Abre el archivo en modo escritura
+        for estudiante in estudiantes:  # Itera sobre cada estudiante en la lista
+            cursos_str = ';'.join(estudiante['cursos'])  # Une los cursos con ';'
+            becado_str = 's' if estudiante['becado'] else 'n'  # Convierte el estado de becado a 's' o 'n'
+            file.write(f"{estudiante['nombre']},{estudiante['identificacion']},{estudiante['edad']},{estudiante['grado']},{cursos_str},{becado_str},{estudiante.get('faltas', 0)}\n")  # Escribe los datos del estudiante en una línea del archivo
 
-# Funcion para actualizar datos de los estudiantes
-def actualizar_estudiante():
-    diego_nombre = input("Ingrese el nombre del estudiante que desea actualizar: ")
-    diego_encontrado = False
-    for estudiante in pazmiño_estudiantes:
-        if estudiante['nombre'] == diego_nombre:
-            print(f"Datos actuales del estudiante:\nNombre: {estudiante['nombre']}, Edad: {estudiante['edad']}, Curso: {estudiante['cursos']}")
-            diego_edad = int(input("Ingrese la nueva edad: "))
-            diego_cursos = input("Ingrese los nuevos cursos separados por ';': ")
-            estudiante['edad'] = diego_edad
-            estudiante['cursos'] = diego_cursos.split(';')
-            print("Los datos del estudiante se han actualizado correctamente.")
-            diego_encontrado = True
-            break
-    if not diego_encontrado:
-        print("Estudiante no ha sido encontrado.")
+# Función para agregar estudiantes
+def agregar_estudiante_gui():
+    ventana_agregar = tk.Toplevel()
+    ventana_agregar.title("Agregar Estudiante")
+
+    tk.Label(ventana_agregar, text="Nombre y Apellido:").grid(row=0, column=0, padx=10, pady=5)  # Etiqueta para nombre
+    nombre_entry = tk.Entry(ventana_agregar)  # Campo de entrada para nombre
+    nombre_entry.grid(row=0, column=1, padx=10, pady=5)  # Posiciona el campo de entrada
+
+    tk.Label(ventana_agregar, text="ID:").grid(row=1, column=0, padx=10, pady=5)  # Etiqueta para ID
+    id_entry = tk.Entry(ventana_agregar)  # Campo de entrada para ID
+    id_entry.grid(row=1, column=1, padx=10, pady=5)  # Posiciona el campo de entrada
+
+    tk.Label(ventana_agregar, text="Edad:").grid(row=2, column=0, padx=10, pady=5)  # Etiqueta para edad
+    edad_entry = tk.Entry(ventana_agregar)  # Campo de entrada para edad
+    edad_entry.grid(row=2, column=1, padx=10, pady=5)  # Posiciona el campo de entrada
+
+    tk.Label(ventana_agregar, text="Grado:").grid(row=3, column=0, padx=10, pady=5)  # Etiqueta para grado
+    grado_entry = tk.Entry(ventana_agregar)  # Campo de entrada para grado
+    grado_entry.grid(row=3, column=1, padx=10, pady=5)  # Posiciona el campo de entrada
+
+    tk.Label(ventana_agregar, text="Cursos (separados por ';'):").grid(row=4, column=0, padx=10, pady=5)  # Etiqueta para cursos
+    cursos_entry = tk.Entry(ventana_agregar)  # Campo de entrada para cursos
+    cursos_entry.grid(row=4, column=1, padx=10, pady=5)  # Posiciona el campo de entrada
+
+    tk.Label(ventana_agregar, text="¿Es becado? (s/n):").grid(row=5, column=0, padx=10, pady=5)  # Etiqueta para estado de becado
+    becado_entry = tk.Entry(ventana_agregar)  # Campo de entrada para estado de becado
+    becado_entry.grid(row=5, column=1, padx=10, pady=5)  # Posiciona el campo de entrada
+
+    def agregar_estudiante():
+        nombre = nombre_entry.get().strip()  # Obtiene el nombre del campo de entrada
+        identificacion = id_entry.get().strip()  # Obtiene el ID del campo de entrada
+        edad = edad_entry.get().strip()  # Obtiene la edad del campo de entrada
+        grado = grado_entry.get().strip()  # Obtiene el grado del campo de entrada
+        cursos = cursos_entry.get().strip()  # Obtiene los cursos del campo de entrada
+        becado = becado_entry.get().strip().lower() == 's'  # Convierte el estado de becado a booleano
+
+        if not nombre or not identificacion or not edad or not grado or not cursos:  # Valida que todos los campos estén completos
+            messagebox.showerror("Error", "Por favor complete todos los campos.")  # Muestra un mensaje de error
+            return
+
+        try:
+            edad = int(edad)  # Intenta convertir la edad a entero
+        except ValueError:
+            messagebox.showerror("Error", "La edad debe ser un número entero.")  # Muestra un mensaje de error si la conversión falla
+            return
+
+        nuevos_cursos = cursos.split(';')  # Divide los cursos por ';'
+
+        estudiante = {
+            'nombre': nombre,
+            'identificacion': identificacion,
+            'edad': edad,
+            'grado': grado,
+            'cursos': nuevos_cursos,
+            'becado': becado,
+            'faltas': 0  # Inicialmente sin faltas
+        }
+
+        pazmiño_estudiantes.append(estudiante)  # Agrega el estudiante a la lista global
+        messagebox.showinfo("Éxito", "Estudiante agregado correctamente.")  # Muestra un mensaje de éxito
+
+        guardar_datos(pazmiño_estudiantes)  # Guarda los datos actualizados en el archivo
+
+        ventana_agregar.destroy()  # Cierra la ventana de agregar estudiante
+
+    tk.Button(ventana_agregar, text="Agregar Estudiante", command=agregar_estudiante).grid(row=6, column=0, columnspan=2, pady=10)  # Botón para agregar estudiante
+
+# Función para imprimir los datos de un estudiante
+def imprimir_datos_estudiante(estudiante):
+    mensaje = (
+        f"Nombre: {estudiante['nombre']}\n"  # # Muestra el nombre del estudiante
+        f"ID: {estudiante['identificacion']}\n"  # # Muestra el ID del estudiante
+        f"Edad: {estudiante['edad']}\n"  # # Muestra la edad del estudiante
+        f"Grado: {estudiante['grado']}\n"  # # Muestra el grado del estudiante
+        f"Cursos: {', '.join(estudiante['cursos'])}\n"  # # Muestra los cursos del estudiante separados por ','
+        f"Becado: {'Sí' if estudiante['becado'] else 'No'}\n"  # # Muestra si el estudiante está becado o no
+        f"Faltas: {estudiante['faltas']}\n"  # # Muestra las faltas del estudiante
+    )
+    return mensaje  # # Retorna el mensaje formateado
+
+# Función para ver lista de estudiantes
+def ver_lista_estudiantes_gui():
+    ventana_lista = tk.Toplevel()
+    ventana_lista.title("Lista de Estudiantes")
+
+    # Función para añadir una falta al estudiante
+    def añadir_falta(indice):
+        pazmiño_estudiantes[indice]['faltas'] += 1
+        if pazmiño_estudiantes[indice]['faltas'] > 3:
+            pazmiño_estudiantes[indice]['becado'] = False
+            messagebox.showinfo("Aviso", f"El estudiante {pazmiño_estudiantes[indice]['nombre']} ha perdido su beca por acumulación de faltas.")
+        guardar_datos(pazmiño_estudiantes)  # Guarda los datos actualizados en el archivo
+        messagebox.showinfo("Éxito", f"Se añadió una falta al estudiante {pazmiño_estudiantes[indice]['nombre']}.")
+
+    for i, estudiante in enumerate(pazmiño_estudiantes):
+        info_estudiante = f"Nombre: {estudiante['nombre']}\nID: {estudiante['identificacion']}\nEdad: {estudiante['edad']}\nGrado: {estudiante['grado']}\nCursos: {', '.join(estudiante['cursos'])}\nBecado: {'Sí' if estudiante['becado'] else 'No'}\nFaltas: {estudiante.get('faltas', 0)}"
+
+        tk.Label(ventana_lista, text=info_estudiante, justify=tk.LEFT).grid(row=i, column=0, padx=10, pady=5)
+
+        tk.Button(ventana_lista, text="Añadir falta", command=lambda idx=i: añadir_falta(idx)).grid(row=i, column=1, padx=10, pady=5)
+
+    # Botón para cerrar la ventana
+    tk.Button(ventana_lista, text="Cerrar", command=ventana_lista.destroy).grid(row=len(pazmiño_estudiantes), column=0, columnspan=2, pady=10)
+
+# Función para buscar estudiantes
+def buscar_estudiantes_gui():
+    ventana_buscar = tk.Toplevel()
+    ventana_buscar.title("Buscar Estudiantes")
+
+    opciones_busqueda = [
+        "Nombre",
+        "ID",
+        "Grado",
+        "Curso"
+    ]
+
+    variable_busqueda = tk.StringVar(ventana_buscar)
+    variable_busqueda.set(opciones_busqueda[0])
+
+    tk.Label(ventana_buscar, text="Buscar por:").grid(row=0, column=0, padx=10, pady=5)
+    buscar_por_menu = tk.OptionMenu(ventana_buscar, variable_busqueda, *opciones_busqueda)
+    buscar_por_menu.grid(row=0, column=1, padx=10, pady=5)
+
+    tk.Label(ventana_buscar, text="Valor a buscar:").grid(row=1, column=0, padx=10, pady=5)
+    valor_busqueda_entry = tk.Entry(ventana_buscar)
+    valor_busqueda_entry.grid(row=1, column=1, padx=10, pady=5)
+
+    resultados_frame = tk.LabelFrame(ventana_buscar, text="Resultados")
+    resultados_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=5, sticky="nsew")
+
+    def buscar():
+        busqueda_por = variable_busqueda.get()
+        valor_busqueda = valor_busqueda_entry.get().strip()
+
+        if not valor_busqueda:
+            messagebox.showerror("Error", "Ingrese un valor para buscar.")
+            return
+
+        # Limpiar resultados anteriores
+        for widget in resultados_frame.winfo_children():
+            widget.destroy()
+
+        encontrados = []
+        for estudiante in pazmiño_estudiantes:
+            if busqueda_por == "Nombre" and valor_busqueda.lower() in estudiante['nombre'].lower():
+                encontrados.append(estudiante)
+            elif busqueda_por == "ID" and valor_busqueda == estudiante['identificacion']:
+                encontrados.append(estudiante)
+            elif busqueda_por == "Grado" and valor_busqueda == estudiante['grado']:
+                encontrados.append(estudiante)
+            elif busqueda_por == "Curso" and valor_busqueda in estudiante['cursos']:
+                encontrados.append(estudiante)
+
+        if encontrados:
+            for i, estudiante in enumerate(encontrados, 1):
+                estudiante_frame = tk.LabelFrame(resultados_frame, text=f"Estudiante {i}")
+                estudiante_frame.pack(padx=10, pady=5, fill="both", expand=True)
+                
+                mensaje = imprimir_datos_estudiante(estudiante)
+                tk.Label(estudiante_frame, text=mensaje).pack(padx=10, pady=5, anchor="w")
+        else:
+            tk.Label(resultados_frame, text="No se encontraron resultados.").pack(padx=20, pady=10)
+
+    tk.Button(ventana_buscar, text="Buscar", command=buscar).grid(row=3, column=0, columnspan=2, pady=10)
+
+# Función para actualizar estudiantes
+def actualizar_estudiante_gui():
+    ventana_actualizar = tk.Toplevel()
+    ventana_actualizar.title("Actualizar Estudiante")
+
+    tk.Label(ventana_actualizar, text="ID del Estudiante:").grid(row=0, column=0, padx=10, pady=5)
+    id_actualizar_entry = tk.Entry(ventana_actualizar)
+    id_actualizar_entry.grid(row=0, column=1, padx=10, pady=5)
+
+    def buscar_estudiante():
+        id_estudiante = id_actualizar_entry.get().strip()
+
+        if not id_estudiante:
+            messagebox.showerror("Error", "Ingrese un ID para buscar.")
+            return
+
+        for estudiante in pazmiño_estudiantes:
+            if estudiante['identificacion'] == id_estudiante:
+                ventana_modificar = tk.Toplevel()
+                ventana_modificar.title("Modificar Estudiante")
+
+                tk.Label(ventana_modificar, text="Nombre y Apellido:").grid(row=0, column=0, padx=10, pady=5)
+                nombre_modificar_entry = tk.Entry(ventana_modificar, width=40)
+                nombre_modificar_entry.grid(row=0, column=1, padx=10, pady=5)
+                nombre_modificar_entry.insert(0, estudiante['nombre'])
+
+                tk.Label(ventana_modificar, text="Edad:").grid(row=1, column=0, padx=10, pady=5)
+                edad_modificar_entry = tk.Entry(ventana_modificar)
+                edad_modificar_entry.grid(row=1, column=1, padx=10, pady=5)
+                edad_modificar_entry.insert(0, estudiante['edad'])
+
+                tk.Label(ventana_modificar, text="¿Es becado? (s/n):").grid(row=2, column=0, padx=10, pady=5)
+                becado_modificar_entry = tk.Entry(ventana_modificar)
+                becado_modificar_entry.grid(row=2, column=1, padx=10, pady=5)
+                becado_modificar_entry.insert(0, 's' if estudiante['becado'] else 'n')
+
+                def guardar_cambios():
+                    estudiante['nombre'] = nombre_modificar_entry.get().strip()
+                    estudiante['edad'] = int(edad_modificar_entry.get().strip())
+                    estudiante['becado'] = becado_modificar_entry.get().strip().lower() == 's'
+
+                    guardar_datos(pazmiño_estudiantes)
+                    messagebox.showinfo("Éxito", "Estudiante actualizado correctamente.")
+                    ventana_modificar.destroy()
+                    ventana_actualizar.destroy()
+
+                tk.Button(ventana_modificar, text="Guardar Cambios", command=guardar_cambios).grid(row=3, column=0, columnspan=2, pady=10)
+                break
+        else:
+            messagebox.showerror("Error", "No se encontró ningún estudiante con ese ID.")
+
+    tk.Button(ventana_actualizar, text="Buscar Estudiante", command=buscar_estudiante).grid(row=1, column=0, columnspan=2, pady=10)
 
 # Función para modificar estudiantes
-def modificar_estudiante():
-    morales1_id = input("Ingrese el ID del estudiante que desea modificar: ")
-    morales1_encontrado = False
+def modificar_estudiante_gui():
+    ventana_modificar = tk.Toplevel()
+    ventana_modificar.title("Modificar Estudiante")
 
-    for estudiante in pazmiño_estudiantes:
-        if estudiante["identificacion"] == morales1_id:
-            morales1_encontrado = True
-            print("Estudiante encontrado. Ingrese los nuevos datos (deje en blanco para mantener el valor actual):")
-            
-            morales2_nombre = input("Nombre actual (" + estudiante['nombre'] + "): ")
-            morales3_edad = input("Edad actual (" + estudiante['edad'] + "): ")
-            morales4_grado = input("Grado actual (" + estudiante['grado'] + "): ")
-            morales5_cursos = input("Cursos actuales (" + ', '.join(estudiante['cursos']) + "): ")
-            mateo4_beca = input("Estado de becado actual (" + ("Sí" if estudiante["becado"] else "No") + "). ¿Desea cambiar? (s/n): ").lower()
-            
-            if morales2_nombre:
-                estudiante["nombre"] = morales2_nombre
-            if morales3_edad:
-                estudiante["edad"] = morales3_edad
-            if morales4_grado:
-                estudiante["grado"] = morales4_grado
-            if morales5_cursos:
-                estudiante["cursos"] = morales5_cursos.split(';')
-            if mateo4_beca == 's':
-                estudiante["becado"] = True
-                mateo5_faltas = int(input("Ingrese el número de faltas del estudiante: "))
-                estudiante["faltas"] = mateo5_faltas
-                if mateo5_faltas > 3:
-                    print("El estudiante ha perdido su beca debido a que el límite de faltas es 3.")
-                    estudiante["becado"] = False
-            elif mateo4_beca == 'n':
-                estudiante["becado"] = False
-                estudiante["faltas"] = 0
-            
-            print("El estudiante ha sido actualizado con éxito.")
-            break
+    tk.Label(ventana_modificar, text="ID del Estudiante:").grid(row=0, column=0, padx=10, pady=5)
+    id_modificar_entry = tk.Entry(ventana_modificar)
+    id_modificar_entry.grid(row=0, column=1, padx=10, pady=5)
 
-    if not morales1_encontrado:
-        print("El estudiante no está registrado en el sistema.")
+    def buscar_estudiante():
+        id_estudiante = id_modificar_entry.get().strip()
+
+        if not id_estudiante:
+            messagebox.showerror("Error", "Ingrese un ID para buscar.")
+            return
+
+        for estudiante in pazmiño_estudiantes:
+            if estudiante['identificacion'] == id_estudiante:
+                ventana_modificar = tk.Toplevel()
+                ventana_modificar.title("Modificar Estudiante")
+
+                tk.Label(ventana_modificar, text="Nombre y Apellido:").grid(row=0, column=0, padx=10, pady=5)
+                nombre_modificar_entry = tk.Entry(ventana_modificar, width=40)
+                nombre_modificar_entry.grid(row=0, column=1, padx=10, pady=5)
+                nombre_modificar_entry.insert(0, estudiante['nombre'])
+
+                tk.Label(ventana_modificar, text="Edad:").grid(row=1, column=0, padx=10, pady=5)
+                edad_modificar_entry = tk.Entry(ventana_modificar)
+                edad_modificar_entry.grid(row=1, column=1, padx=10, pady=5)
+                edad_modificar_entry.insert(0, estudiante['edad'])
+
+                tk.Label(ventana_modificar, text="Grado:").grid(row=2, column=0, padx=10, pady=5)
+                grado_modificar_entry = tk.Entry(ventana_modificar)
+                grado_modificar_entry.grid(row=2, column=1, padx=10, pady=5)
+                grado_modificar_entry.insert(0, estudiante['grado'])
+
+                tk.Label(ventana_modificar, text="Cursos (separados por ';'):").grid(row=3, column=0, padx=10, pady=5)
+                cursos_modificar_entry = tk.Entry(ventana_modificar)
+                cursos_modificar_entry.grid(row=3, column=1, padx=10, pady=5)
+                cursos_modificar_entry.insert(0, ';'.join(estudiante['cursos']))
+
+                tk.Label(ventana_modificar, text="¿Es becado? (s/n):").grid(row=4, column=0, padx=10, pady=5)
+                becado_modificar_entry = tk.Entry(ventana_modificar)
+                becado_modificar_entry.grid(row=4, column=1, padx=10, pady=5)
+                becado_modificar_entry.insert(0, 's' if estudiante['becado'] else 'n')
+
+                def guardar_cambios():
+                    estudiante['nombre'] = nombre_modificar_entry.get().strip()
+                    estudiante['edad'] = int(edad_modificar_entry.get().strip())
+                    estudiante['grado'] = grado_modificar_entry.get().strip()
+                    estudiante['cursos'] = cursos_modificar_entry.get().strip().split(';')
+                    estudiante['becado'] = becado_modificar_entry.get().strip().lower() == 's'
+
+                    guardar_datos(pazmiño_estudiantes)
+                    messagebox.showinfo("Éxito", "Estudiante actualizado correctamente.")
+                    ventana_modificar.destroy()
+
+                tk.Button(ventana_modificar, text="Guardar Cambios", command=guardar_cambios).grid(row=5, column=0, columnspan=2, pady=10)
+                break
+        else:
+            messagebox.showerror("Error", "No se encontró ningún estudiante con ese ID.")
+
+    tk.Button(ventana_modificar, text="Buscar Estudiante", command=buscar_estudiante).grid(row=1, column=0, columnspan=2, pady=10)
 
 # Función para eliminar estudiantes
-def eliminar_estudiante():
-    morales1_id = input("Ingrese el ID del estudiante que desea eliminar: ")
-    morales1_encontrado = False
+def eliminar_estudiante_gui():
+    ventana_eliminar = tk.Toplevel()
+    ventana_eliminar.title("Eliminar Estudiante")
 
-    for estudiante in pazmiño_estudiantes:
-        if estudiante["identificacion"] == morales1_id:
-            pazmiño_estudiantes.remove(estudiante)
-            morales1_encontrado = True
-            print("El estudiante con ID " + morales1_id + " ha sido eliminado.")
-            break
+    tk.Label(ventana_eliminar, text="ID del Estudiante:").grid(row=0, column=0, padx=10, pady=5)
+    id_eliminar_entry = tk.Entry(ventana_eliminar)
+    id_eliminar_entry.grid(row=0, column=1, padx=10, pady=5)
 
-    if not morales1_encontrado:
-        print("El estudiante no está registrado en el sistema.")
+    def eliminar_estudiante():
+        id_estudiante = id_eliminar_entry.get().strip()
 
-# Función para salir del sistema
-def salir():
-    morales1_confirmacion = input("¿Está seguro que desea salir? (s/n): ").lower()
-    if morales1_confirmacion == 's':
-        print("Gracias por usar el sistema de gestión de estudiantes. ¡Hasta luego!")
-    else:
-        print("Regresando al menú principal...")
+        if not id_estudiante:
+            messagebox.showerror("Error", "Ingrese un ID para buscar.")
+            return
 
-# Menú principal
-def menu_principal():
-    while True:
-        print("\nMenú Principal:")
-        print("1. Agregar Estudiante")
-        print("2. Buscar Estudiante")
-        print("3. Ver Lista de Estudiantes")
-        print("4. Actualizar Estudiante")
-        print("5. Guardar/Actualizar Archivo de Datos")
-        print("6. Cargar Datos desde Archivo")
-        print("7. Modificar Estudiante")
-        print("8. Eliminar Estudiante")
-        print("9. Salir")
-
-        daniel_opcion = input("Seleccione una opción (1-9): ")
-
-        if daniel_opcion == "1":
-            agregar_estudiantes()
-        elif daniel_opcion == "2":
-            buscar_estudiantes()
-        elif daniel_opcion == "3":
-            ver_lista_estudiantes()
-        elif daniel_opcion == "4":
-            actualizar_estudiante()
-        elif daniel_opcion == "5":
-            guardar_datos()
-        elif daniel_opcion == "6":
-            cargar_datos()
-        elif daniel_opcion == "7":
-            modificar_estudiante()
-        elif daniel_opcion == "8":
-            eliminar_estudiante()
-        elif daniel_opcion == "9":
-            salir()
-            break
+        for i, estudiante in enumerate(pazmiño_estudiantes):
+            if estudiante['identificacion'] == id_estudiante:
+                pazmiño_estudiantes.pop(i)
+                guardar_datos(pazmiño_estudiantes)
+                messagebox.showinfo("Éxito", "Estudiante eliminado correctamente.")
+                ventana_eliminar.destroy()
+                break
         else:
-            print("Opción no válida. Por favor, seleccione una opción del 1 al 9.")
+            messagebox.showerror("Error", "No se encontró ningún estudiante con ese ID.")
 
-# Iniciar el programa llamando al menú principal
-menu_principal()
+    tk.Button(ventana_eliminar, text="Eliminar Estudiante", command=eliminar_estudiante).grid(row=1, column=0, columnspan=2, pady=10)
+
+# Función para cargar datos desde un archivo de texto
+def cargar_datos_desde_archivo():
+    global pazmiño_estudiantes
+    pazmiño_estudiantes = []  # Reinicia la lista global de estudiantes
+
+    if os.path.exists('estudiantes.txt'):  # Verifica si el archivo existe
+        with open('estudiantes.txt', 'r') as file:
+            for line in file:  # Itera sobre cada línea del archivo
+                parts = line.strip().split(',')  # Divide la línea en partes usando la coma como separador
+                if len(parts) >= 6:
+                    nombre, identificacion, edad, grado, cursos, becado = parts[:6]  # Extrae datos básicos
+                    faltas = int(parts[6]) if len(parts) > 6 else 0  # Extrae las faltas si están disponibles
+                    pazmiño_estudiantes.append({  # Agrega un diccionario de estudiante a la lista
+                        'nombre': nombre,
+                        'identificacion': identificacion,
+                        'edad': int(edad),
+                        'grado': grado,
+                        'cursos': cursos.split(';'),
+                        'becado': becado.lower() == 's',
+                        'faltas': faltas
+                    })
+
+        messagebox.showinfo("Éxito", "Datos cargados correctamente desde el archivo estudiantes.txt.")
+    else:
+        messagebox.showerror("Error", "El archivo estudiantes.txt no existe.")
+
+# Función para salir y cerrar el programa con mensaje
+def salir_con_mensaje():
+    ventana_principal.quit()  # Cierra la ventana principal de Tkinter
+    messagebox.showinfo("Hasta luego", "Cerrando programa....\nPonganos un 50 profe :(")
+
+
+# Función principal para mostrar el menú
+# Función principal para mostrar el menú
+def mostrar_menu_principal():
+    global ventana_principal
+    ventana_principal = tk.Tk()
+    ventana_principal.title("Gestión de Estudiantes")
+
+    tk.Button(ventana_principal, text="Agregar Estudiante", command=agregar_estudiante_gui).pack(padx=20, pady=10)
+    tk.Button(ventana_principal, text="Ver Lista de Estudiantes", command=ver_lista_estudiantes_gui).pack(padx=20, pady=10)
+    tk.Button(ventana_principal, text="Buscar Estudiantes", command=buscar_estudiantes_gui).pack(padx=20, pady=10)
+    tk.Button(ventana_principal, text="Actualizar Estudiante", command=actualizar_estudiante_gui).pack(padx=20, pady=10)
+    tk.Button(ventana_principal, text="Modificar Estudiante", command=modificar_estudiante_gui).pack(padx=20, pady=10)
+    tk.Button(ventana_principal, text="Eliminar Estudiante", command=eliminar_estudiante_gui).pack(padx=20, pady=10)
+    
+    # Botón para guardar datos en un archivo de texto
+    tk.Button(ventana_principal, text="Guardar Datos TXT", command=guardar_datos_txt).pack(padx=20, pady=10)
+    
+    # Botón para cargar datos desde un archivo de texto
+    tk.Button(ventana_principal, text="Cargar Datos desde Archivo", command=cargar_datos_desde_archivo).pack(padx=20, pady=10)
+    
+    # Botón para salir y cerrar el programa con mensaje
+    tk.Button(ventana_principal, text="Salir", command=salir_con_mensaje).pack(padx=20, pady=10)
+
+    ventana_principal.mainloop()  # Ejecuta el bucle principal de la ventana
+
+# Cargar los datos al iniciar el programa
+pazmiño_estudiantes = cargar_datos()
+
+# Ejecutar la función principal para mostrar el menú
+mostrar_menu_principal()
