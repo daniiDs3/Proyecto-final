@@ -1,7 +1,9 @@
 import os
 
-# Función para agregar estudiantes
+# Lista global de estudiantes
 pazmiño_estudiantes = []
+
+# Función para agregar estudiantes
 def agregar_estudiantes():
     pazmino_n = input("Ingrese los nombres y apellidos del estudiante: ")
     pazmino_id = input("Ingrese el numero de identificacion del estudiante: ")
@@ -36,7 +38,7 @@ def agregar_estudiantes():
     pazmiño_estudiantes.append(daniel_estudiante)
     print("El estudiante ha sido agregado con éxito.")
 
- # Guardar los datos actualizados en el archivo
+    # Guardar los datos actualizados en el archivo
     guardar_datos(pazmiño_estudiantes)
 
 # Función para imprimir los datos de un estudiante
@@ -66,9 +68,6 @@ def ver_lista_estudiantes():
             print("Grado:", estudiante["grado"])
             print("Cursos:", ', '.join(estudiante["cursos"]))
             print("---------------------------------")
-
-# Cargar datos al inicio del programa
-    pazmiño_estudiantes = cargar_datos()
 
 # Función para buscar estudiantes
 def buscar_estudiantes():
@@ -117,16 +116,16 @@ def guardar_datos(estudiantes):
             file.write(f"{estudiante['nombre']},{estudiante['identificacion']},{estudiante['edad']},{estudiante['grado']},{diego_cursos_str}\n")
 
 # Funcion para actualizar datos de los estudiantes
-def actualizar_estudiante(estudiantes):
+def actualizar_estudiante():
     diego_nombre = input("Ingrese el nombre del estudiante que desea actualizar: ")
     diego_encontrado = False
-    for estudiante in estudiantes:
+    for estudiante in pazmiño_estudiantes:
         if estudiante['nombre'] == diego_nombre:
-            print(f"Datos actuales del estudiante:\nNombre: {estudiante['nombre']}, Edad: {estudiante['edad']}, Curso: {estudiante['curso']}")
+            print(f"Datos actuales del estudiante:\nNombre: {estudiante['nombre']}, Edad: {estudiante['edad']}, Curso: {estudiante['cursos']}")
             diego_edad = int(input("Ingrese la nueva edad: "))
-            diego_curso = input("Ingrese el nuevo curso: ")
+            diego_cursos = input("Ingrese los nuevos cursos separados por ';': ")
             estudiante['edad'] = diego_edad
-            estudiante['curso'] = diego_curso
+            estudiante['cursos'] = diego_cursos.split(';')
             print("Los datos del estudiante se han actualizado correctamente.")
             diego_encontrado = True
             break
@@ -146,7 +145,7 @@ def modificar_estudiante():
             morales2_nombre = input("Nombre actual (" + estudiante['nombre'] + "): ")
             morales3_edad = input("Edad actual (" + estudiante['edad'] + "): ")
             morales4_grado = input("Grado actual (" + estudiante['grado'] + "): ")
-            morales5_cursos = input("Cursos actuales (" + estudiante['cursos'] + "): ")
+            morales5_cursos = input("Cursos actuales (" + ', '.join(estudiante['cursos']) + "): ")
             mateo4_beca = input("Estado de becado actual (" + ("Sí" if estudiante["becado"] else "No") + "). ¿Desea cambiar? (s/n): ").lower()
             
             if morales2_nombre:
@@ -156,7 +155,7 @@ def modificar_estudiante():
             if morales4_grado:
                 estudiante["grado"] = morales4_grado
             if morales5_cursos:
-                estudiante["cursos"] = morales5_cursos
+                estudiante["cursos"] = morales5_cursos.split(';')
             if mateo4_beca == 's':
                 estudiante["becado"] = True
                 mateo5_faltas = int(input("Ingrese el número de faltas del estudiante: "))
@@ -182,59 +181,4 @@ def eliminar_estudiante():
     for estudiante in pazmiño_estudiantes:
         if estudiante["identificacion"] == morales1_id:
             pazmiño_estudiantes.remove(estudiante)
-            morales1_encontrado = True
-            print("El estudiante con ID " + morales1_id + " ha sido eliminado.")
-            break
-
-    if not morales1_encontrado:
-        print("El estudiante no está registrado en el sistema.")
-
-# Función para salir del sistema
-def salir():
-    morales1_confirmacion = input("¿Está seguro que desea salir? (s/n): ").lower()
-    if morales1_confirmacion == 's':
-        print("Gracias por usar nuestro sistema de gestión de estudiantes. ¡Hasta luego!")
-    else:
-        print("Regresando al menú principal...")
-
-# Menú principal
-def menu_principal():
-    while True:
-        print("\nMenú Principal:")
-        print("1. Agregar Estudiante")
-        print("2. Buscar Estudiante")
-        print("3. Ver Lista de Estudiantes")
-        print("4. Actualizar Estudiante")
-        print("5. Guardar/Actualizar Archivo de Datos")
-        print("6. Cargar Datos desde Archivo")
-        print("7. Modificar Estudiante")
-        print("8. Eliminar Estudiante")
-        print("9. Salir")
-
-        daniel_opcion = input("Seleccione una opción (1-9): ")
-
-        if daniel_opcion == "1":
-            agregar_estudiantes()
-        elif daniel_opcion == "2":
-            buscar_estudiantes()
-        elif daniel_opcion == "3":
-            ver_lista_estudiantes()
-        elif daniel_opcion == "4":
-            actualizar_estudiante()
-        elif daniel_opcion == "5":
-            guardar_datos()
-        elif daniel_opcion == "6":
-            cargar_datos()
-        elif daniel_opcion == "7":
-            modificar_estudiante()
-        elif daniel_opcion == "8":
-            eliminar_estudiante()
-        elif daniel_opcion == "9":
-            salir()
-            break
-        else:
-            print("Opción no válida. Por favor, seleccione una opción del 1 al 9.")
-
-# Iniciar el programa llamando al menú principal
-menu_principal()
-
+           
