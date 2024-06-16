@@ -181,4 +181,58 @@ def eliminar_estudiante():
     for estudiante in pazmiño_estudiantes:
         if estudiante["identificacion"] == morales1_id:
             pazmiño_estudiantes.remove(estudiante)
-           
+            morales1_encontrado = True
+            print("El estudiante con ID " + morales1_id + " ha sido eliminado.")
+            break
+
+    if not morales1_encontrado:
+        print("El estudiante no está registrado en el sistema.")
+
+# Función para salir del sistema
+def salir():
+    morales1_confirmacion = input("¿Está seguro que desea salir? (s/n): ").lower()
+    if morales1_confirmacion == 's':
+        print("Gracias por usar el sistema de gestión de estudiantes. ¡Hasta luego!")
+    else:
+        print("Regresando al menú principal...")
+
+# Menú principal
+def menu_principal():
+    while True:
+        print("\nMenú Principal:")
+        print("1. Agregar Estudiante")
+        print("2. Buscar Estudiante")
+        print("3. Ver Lista de Estudiantes")
+        print("4. Actualizar Estudiante")
+        print("5. Guardar/Actualizar Archivo de Datos")
+        print("6. Cargar Datos desde Archivo")
+        print("7. Modificar Estudiante")
+        print("8. Eliminar Estudiante")
+        print("9. Salir")
+
+        daniel_opcion = input("Seleccione una opción (1-9): ")
+
+        if daniel_opcion == "1":
+            agregar_estudiantes()
+        elif daniel_opcion == "2":
+            buscar_estudiantes()
+        elif daniel_opcion == "3":
+            ver_lista_estudiantes()
+        elif daniel_opcion == "4":
+            actualizar_estudiante()
+        elif daniel_opcion == "5":
+            guardar_datos()
+        elif daniel_opcion == "6":
+            cargar_datos()
+        elif daniel_opcion == "7":
+            modificar_estudiante()
+        elif daniel_opcion == "8":
+            eliminar_estudiante()
+        elif daniel_opcion == "9":
+            salir()
+            break
+        else:
+            print("Opción no válida. Por favor, seleccione una opción del 1 al 9.")
+
+# Iniciar el programa llamando al menú principal
+menu_principal()
