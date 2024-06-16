@@ -1,73 +1,95 @@
+import os
+
 pazmiño_estudiantes = []
 
+# Función para cargar datos desde un archivo
+def cargar_datos():
+    diego_estudiantes = []
+    if os.path.exists('estudiantes.txt'):
+        with open('estudiantes.txt', 'r') as file:
+            for line in file:
+                nombre, identificacion, edad, grado, cursos = line.strip().split(',')
+                diego_estudiantes.append({
+                    'nombre': nombre,
+                    'identificacion': identificacion,
+                    'edad': edad,
+                    'grado': grado,
+                    'cursos': cursos.split(';')  # Separar los cursos por ';'
+                })
+    return diego_estudiantes
+
+# Función para guardar o actualizar datos en un archivo
+def guardar_datos(estudiantes):
+    with open('estudiantes.txt', 'w') as file:
+        for estudiante in estudiantes:
+            cursos_str = ';'.join(estudiante['cursos'])  # Convertir cursos a string separados por ';'
+            file.write(f"{estudiante['nombre']},{estudiante['identificacion']},{estudiante['edad']},{estudiante['grado']},{cursos_str}\n")
+
+# Función para agregar estudiantes
 def agregar_estudiantes():
     pazmino_n = input("Ingrese los nombres y apellidos del estudiante: ")
     pazmino_id = input("Ingrese el numero de identificacion del estudiante: ")
     pazmino_e = input("Ingrese la edad del estudiante: ")
     pazmino_g = input("Ingrese el grado del estudiante: ")
-    pazmino_c = input("Ingrese los cursos inscritos del estudiante: ")
+    pazmino_c = input("Ingrese los cursos inscritos del estudiante separados por ';' (Ej. Matemáticas;Historia): ")
 
+    # Verificar si el estudiante ya está registrado por su identificación
     for estudiante in pazmiño_estudiantes:
         if estudiante["identificacion"] == pazmino_id:
-            print("El estudiante ya está registrado")
+            print("El estudiante ya está registrado.")
             return
-        
-    daniel_estudiante = {
+    
+    # Crear diccionario del estudiante y agregarlo a la lista
+    nuevo_estudiante = {
         "nombre": pazmino_n,
         "identificacion": pazmino_id,
         "edad": pazmino_e,
         "grado": pazmino_g,
-        "cursos": pazmino_c
+        "cursos": pazmino_c.split(';')  # Convertir cursos a lista separados por ';'
     }
-    pazmiño_estudiantes.append(daniel_estudiante)
-    print("El estudiante ha sido agregado con exito")
+    pazmiño_estudiantes.append(nuevo_estudiante)
+    print("El estudiante ha sido agregado con éxito.")
 
+    # Guardar los datos actualizados en el archivo
+    guardar_datos(pazmiño_estudiantes)
+
+# Función para buscar estudiantes
 def buscar_estudiantes():
-  
     daniel_buscar_por = input("Ingrese el criterio de búsqueda del estudiante (nombre, ID, grado, curso): ")
     daniel_buscar_valor = input("Ingrese el valor de búsqueda del estudiante: ") 
     daniel_encontrado = False 
 
     for estudiante in pazmiño_estudiantes:
-        if daniel_buscar_por == "nombre" and estudiante["nombre"] == daniel_buscar_valor:
-            print("¡Estudiante encontrado!:")
-            print("Nombre:", estudiante["nombre"])
-            print("ID:", estudiante["identificacion"])
-            print("Edad:", estudiante["edad"])
-            print("Grado:", estudiante["grado"])
-            print("Cursos:", estudiante["cursos"])
+        if daniel_buscar_por.lower() == "nombre" and estudiante["nombre"].lower() == daniel_buscar_valor.lower():
+            imprimir_datos_estudiante(estudiante)
             daniel_encontrado = True
-        elif daniel_buscar_por == "ID" and estudiante["identificacion"] == daniel_buscar_valor:
-            print("¡Estudiante encontrado!:")
-            print("Nombre:", estudiante["nombre"])
-            print("ID:", estudiante["identificacion"])
-            print("Edad:", estudiante["edad"])
-            print("Grado:", estudiante["grado"])
-            print("Cursos:", estudiante["cursos"])
+        elif daniel_buscar_por.lower() == "id" and estudiante["identificacion"] == daniel_buscar_valor:
+            imprimir_datos_estudiante(estudiante)
             daniel_encontrado = True
-        elif daniel_buscar_por == "grado" and estudiante["grado"] == daniel_buscar_valor:
-            print("¡Estudiante encontrado!:")
-            print("Nombre:", estudiante["nombre"])
-            print("ID:", estudiante["identificacion"])
-            print("Edad:", estudiante["edad"])
-            print("Grado:", estudiante["grado"])
-            print("Cursos:", estudiante["cursos"])
+        elif daniel_buscar_por.lower() == "grado" and estudiante["grado"].lower() == daniel_buscar_valor.lower():
+            imprimir_datos_estudiante(estudiante)
             daniel_encontrado = True
-        elif daniel_buscar_por == "curso" and daniel_buscar_valor in estudiante["cursos"]:
-            print("¡Estudiante encontrado!:")
-            print("Nombre:", estudiante["nombre"])
-            print("ID:", estudiante["identificacion"])
-            print("Edad:", estudiante["edad"])
-            print("Grado:", estudiante["grado"])
-            print("Cursos:", estudiante["cursos"])
+        elif daniel_buscar_por.lower() == "curso" and daniel_buscar_valor.lower() in [curso.lower() for curso in estudiante["cursos"]]:
+            imprimir_datos_estudiante(estudiante)
             daniel_encontrado = True
 
     if not daniel_encontrado:
-        print("El estudiante no está registrado en el sistema")  
+        print("El estudiante no está registrado en el sistema.")  
 
+# Función para imprimir los datos de un estudiante
+def imprimir_datos_estudiante(estudiante):
+    print("¡Estudiante encontrado!:")
+    print("Nombre:", estudiante["nombre"])
+    print("ID:", estudiante["identificacion"])
+    print("Edad:", estudiante["edad"])
+    print("Grado:", estudiante["grado"])
+    print("Cursos:", ', '.join(estudiante["cursos"]))
+    print("---------------------------------")
+
+# Función para ver la lista de estudiantes
 def ver_lista_estudiantes():
     if not pazmiño_estudiantes:
-        print("No existe ningun estudiantes registrados en el sistema")
+        print("No existen estudiantes registrados en el sistema.")
     else:
         print("Lista de estudiantes registrados:")
         for i, estudiante in enumerate(pazmiño_estudiantes, 1):
@@ -76,5 +98,30 @@ def ver_lista_estudiantes():
             print("ID:", estudiante["identificacion"])
             print("Edad:", estudiante["edad"])
             print("Grado:", estudiante["grado"])
-            print("Cursos:", estudiante["cursos"])
+            print("Cursos:", ', '.join(estudiante["cursos"]))
             print("---------------------------------")
+
+# Cargar datos al inicio del programa
+pazmiño_estudiantes = cargar_datos()
+
+# Ejemplo de uso del programa
+while True:
+    print("\nBienvenido al sistema de gestión de estudiantes.")
+    print("1. Agregar estudiante")
+    print("2. Buscar estudiante")
+    print("3. Ver lista de estudiantes")
+    print("4. Salir")
+    opcion = input("Seleccione una opción: ")
+
+    if opcion == "1":
+        agregar_estudiantes()
+    elif opcion == "2":
+        buscar_estudiantes()
+    elif opcion == "3":
+        ver_lista_estudiantes()
+    elif opcion == "4":
+        guardar_datos(pazmiño_estudiantes)  # Guardar datos antes de salir
+        print("¡Hasta luego!")
+        break
+    else:
+        print("Opción inválida. Por favor seleccione una opción válida.")
