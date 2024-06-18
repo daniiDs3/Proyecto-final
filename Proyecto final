@@ -220,7 +220,7 @@ def mateo_actualizar_estudiante_gui():
     mateo_id_actualizar_entry = tk.Entry(mateo_ventana_actualizar)
     mateo_id_actualizar_entry.grid(row=0, column=1, padx=10, pady=5)
 
-    def buscar_estudiante():
+    def ariel_buscar_estudiante():
         mateo_id_estudiante = mateo_id_actualizar_entry.get().strip()
 
         if not mateo_id_estudiante:
@@ -262,7 +262,7 @@ def mateo_actualizar_estudiante_gui():
         else:
             messagebox.showerror("Error", "No se encontró ningún estudiante con ese ID.")
 
-    tk.Button(mateo_ventana_actualizar, text="Buscar Estudiante", command=buscar_estudiante).grid(row=1, column=0, columnspan=2, pady=10)
+    tk.Button(mateo_ventana_actualizar, text="Buscar Estudiante", command=ariel_buscar_estudiante).grid(row=1, column=0, columnspan=2, pady=10)
 
 # Función para modificar estudiantes
 def pazmiño_modificar_estudiante_gui():
@@ -310,7 +310,7 @@ def pazmiño_modificar_estudiante_gui():
                 becado_modificar_entry.grid(row=4, column=1, padx=10, pady=5)
                 becado_modificar_entry.insert(0, 'si' if estudiante['becado'] else 'no')
 
-                def guardar_cambios():
+                def diegodaniel_guardar_cambios():
                     estudiante['nombre'] = nombre_modificar_entry.get().strip()
                     estudiante['edad'] = int(edad_modificar_entry.get().strip())
                     estudiante['grado'] = grado_modificar_entry.get().strip()
@@ -321,7 +321,7 @@ def pazmiño_modificar_estudiante_gui():
                     messagebox.showinfo("Éxito", "Estudiante actualizado correctamente.")
                     pazmiño_ventana_modificar.destroy()
 
-                tk.Button(pazmiño_ventana_modificar, text="Guardar Cambios", command=guardar_cambios).grid(row=5, column=0, columnspan=2, pady=10)
+                tk.Button(pazmiño_ventana_modificar, text="Guardar Cambios", command=diegodaniel_guardar_cambios).grid(row=5, column=0, columnspan=2, pady=10)
                 break
         else:
             messagebox.showerror("Error", "No se encontró ningún estudiante con ese ID.")
@@ -337,7 +337,7 @@ def pazmiño_eliminar_estudiante_gui():
     id_eliminar_entry = tk.Entry(ventana_eliminar)
     id_eliminar_entry.grid(row=0, column=1, padx=10, pady=5)
 
-    def eliminar_estudiante():
+    def danielalejandro_eliminar_estudiante():
         id_estudiante = id_eliminar_entry.get().strip()
 
         if not id_estudiante:
@@ -354,10 +354,10 @@ def pazmiño_eliminar_estudiante_gui():
         else:
             messagebox.showerror("Error", "No se encontró ningún estudiante con ese ID.")
 
-    tk.Button(ventana_eliminar, text="Eliminar Estudiante", command=eliminar_estudiante).grid(row=1, column=0, columnspan=2, pady=10)
+    tk.Button(ventana_eliminar, text="Eliminar Estudiante", command=danielalejandro_eliminar_estudiante).grid(row=1, column=0, columnspan=2, pady=10)
 
 # Función para cargar datos desde un archivo de texto
-def ceballos_cargar_datos_desde_archivo():
+def cevallos_cargar_datos_desde_archivo():
     global pazmiño_estudiantes
     pazmiño_estudiantes = []  # Reinicia la lista global de estudiantes
 
@@ -383,7 +383,7 @@ def ceballos_cargar_datos_desde_archivo():
         messagebox.showerror("Error", "El archivo estudiantes.txt no existe.")
 
 # Función para salir y cerrar el programa con mensaje
-def ceballos_salir_con_mensaje():
+def cevallos_salir_con_mensaje():
     ventana_principal.quit()  # Cierra la ventana principal de Tkinter
     messagebox.showinfo("Hasta luego", "Cerrando programa....\nPonganos un 50 profe :(")
 
@@ -406,10 +406,10 @@ def morales_mostrar_menu_principal():
     tk.Button(ventana_principal, text="Guardar Datos TXT", command=daniel_guardar_datos_txt).pack(padx=20, pady=10)
     
     # Botón para cargar datos desde un archivo de texto
-    tk.Button(ventana_principal, text="Cargar Datos desde Archivo", command=ceballos_cargar_datos_desde_archivo).pack(padx=20, pady=10)
+    tk.Button(ventana_principal, text="Cargar Datos desde Archivo", command=cevallos_cargar_datos_desde_archivo).pack(padx=20, pady=10)
     
     # Botón para salir y cerrar el programa con mensaje
-    tk.Button(ventana_principal, text="Salir", command=ceballos_salir_con_mensaje).pack(padx=20, pady=10)
+    tk.Button(ventana_principal, text="Salir", command=cevallos_salir_con_mensaje).pack(padx=20, pady=10)
 
     ventana_principal.mainloop()  # Ejecuta el bucle principal de la ventana
 
